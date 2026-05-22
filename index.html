@@ -226,11 +226,11 @@
         <div class="columns is-mobile is-variable is-3" style="align-items: flex-end;">
           <div class="column is-narrow">
             <label class="field-label-mono" for="block-number">Block</label>
-            <input class="input" type="text" id="block-number" value="55" placeholder="55" />
+            <input class="input" type="text" id="block-number" placeholder="55" />
           </div>
           <div class="column">
             <label class="field-label-mono" for="street-name">Street Name</label>
-            <input class="input" type="text" id="street-name" value="ayer rajah crescent" placeholder="ayer rajah crescent" />
+            <input class="input" type="text" id="street-name" placeholder="ayer rajah crescent" />
           </div>
         </div>
 
@@ -309,6 +309,8 @@
     } finally {
       searchBtn.classList.remove('is-loading');
       searchBtn.disabled = false;
+      blockInput.value = '';
+      streetInput.value = '';
     }
   });
 
