@@ -309,6 +309,8 @@
     } finally {
       searchBtn.classList.remove('is-loading');
       searchBtn.disabled = false;
+      blockInput.placeholder = blockInput.value.trim() || blockInput.placeholder;
+      streetInput.placeholder = streetInput.value.trim() || streetInput.placeholder;
       blockInput.value = '';
       streetInput.value = '';
     }
