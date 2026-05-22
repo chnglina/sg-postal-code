@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SG Postal Lookup</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/1.0.2/css/bulma.min.css" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@700;800&display=swap" />
+  <style>
+    :root {
+      --red: #e8002d;
+      --white: #ffffff;
+      --bg: #f5f5f0;
+      --card-bg: #ffffff;
+      --text: #1a1a1a;
+      --muted: #888;
+      --border: #e0e0d8;
+    }
+
+    html, body {
+      background-color: var(--bg);
+      min-height: 100vh;
+      font-family: 'DM Mono', monospace;
+    }
+
+    /* Flag-inspired top bar */
+    .sg-flag-bar {
+      height: 6px;
+      background: linear-gradient(to right, var(--red) 50%, var(--white) 50%);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .hero.is-custom {
+      background-color: var(--bg);
+    }
+
+    .page-title {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: 2.6rem;
+      letter-spacing: -0.03em;
+      color: var(--text);
+      line-height: 1.1;
+    }
+
+    .page-title span {
+      color: var(--red);
+    }
+
+    .subtitle-label {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.75rem;
+      color: var(--muted);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      margin-top: 0.5rem;
+    }
+
+    .lookup-card {
+      background: var(--card-bg);
+      border: 1.5px solid var(--border);
+      border-radius: 4px;
+      padding: 2.5rem 2rem;
+      box-shadow: 4px 4px 0px var(--border);
+    }
+
+    .field-label-mono {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.7rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 0.4rem;
+      display: block;
+    }
+
+    .input {
+      font-family: 'DM Mono', monospace;
+      font-size: 1rem;
+      border: 1.5px solid var(--border);
+      border-radius: 3px;
+      background: var(--bg);
+      color: var(--text);
+      transition: border-color 0.15s;
+    }
+
+    .input:focus {
+      border-color: var(--red);
+      box-shadow: 0 0 0 2px rgba(232, 0, 45, 0.1);
+    }
+
+    #block-number {
+      width: 110px;
+      max-width: 110px;
+    }
+
+    #street-name {
+      width: 100%;
+    }
+
+    .button#search {
+      font-family: 'DM Mono', monospace;
+      font-weight: 500;
+      font-size: 0.85rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      background-color: var(--red);
+      color: #fff;
+      border: none;
+      border-radius: 3px;
+      padding: 0.65em 2em;
+      cursor: pointer;
+      transition: background 0.15s, transform 0.1s;
+      height: auto;
+    }
+
+    .button#search:hover {
+      background-color: #c40027;
+    }
+
+    .button#search:active {
+      transform: translateY(1px);
+    }
+
+    .button#search.is-loading {
+      background-color: var(--red);
+      opacity: 0.7;
+    }
+
+    .divider {
+      height: 1px;
+      background: var(--border);
+      margin: 2rem 0;
+    }
+
+    .result-area {
+      text-align: center;
+      min-height: 80px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .result-label {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.68rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 0.5rem;
+    }
+
+    h1#postal-code {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: 4rem;
+      letter-spacing: -0.04em;
+      color: var(--red);
+      line-height: 1;
+      opacity: 0;
+      transform: translateY(8px);
+      transition: opacity 0.3s ease, transform 0.3s ease;
+    }
+
+    h1#postal-code.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .not-found-text {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.95rem;
+      color: var(--muted);
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .not-found-text.visible {
+      opacity: 1;
+    }
+
+    .address-line {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.78rem;
+      color: var(--muted);
+      margin-top: 0.6rem;
+      letter-spacing: 0.02em;
+      opacity: 0;
+      transition: opacity 0.4s ease 0.1s;
+    }
+
+    .address-line.visible {
+      opacity: 1;
+    }
+
+    .crescent-deco {
+      font-size: 0.9rem;
+      color: var(--red);
+      margin-bottom: 0.3rem;
+    }
+
+    @media (max-width: 480px) {
+      .page-title { font-size: 2rem; }
+      h1#postal-code { font-size: 3rem; }
+      .lookup-card { padding: 1.5rem 1.2rem; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="sg-flag-bar"></div>
+
+<section class="hero is-custom">
+  <div class="hero-body">
+    <div class="container" style="max-width: 560px;">
+
+      <div style="margin-bottom: 2rem;">
+        <p class="page-title">Postal<br/>Lookup <span>SG</span></p>
+        <p class="subtitle-label">OneMap · Address Search</p>
+      </div>
+
+      <div class="lookup-card">
+
+        <!-- Inputs row -->
+        <div class="columns is-mobile is-variable is-3" style="align-items: flex-end;">
+          <div class="column is-narrow">
+            <label class="field-label-mono" for="block-number">Block</label>
+            <input class="input" type="text" id="block-number" value="55" placeholder="55" />
+          </div>
+          <div class="column">
+            <label class="field-label-mono" for="street-name">Street Name</label>
+            <input class="input" type="text" id="street-name" value="ayer rajah crescent" placeholder="ayer rajah crescent" />
+          </div>
+        </div>
+
+        <div style="margin-top: 1.25rem;">
+          <button class="button" id="search">Search →</button>
+        </div>
+
+        <div class="divider"></div>
+
+        <!-- Result -->
+        <div class="result-area" id="result-area">
+          <p class="result-label" id="result-label" style="display:none;">Postal Code</p>
+          <h1 id="postal-code"></h1>
+          <p class="address-line" id="address-line"></p>
+          <p class="not-found-text" id="not-found"></p>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<script>
+  const searchBtn = document.getElementById('search');
+  const blockInput = document.getElementById('block-number');
+  const streetInput = document.getElementById('street-name');
+  const postalEl = document.getElementById('postal-code');
+  const addressEl = document.getElementById('address-line');
+  const notFoundEl = document.getElementById('not-found');
+  const resultLabel = document.getElementById('result-label');
+
+  function clearResult() {
+    postalEl.classList.remove('visible');
+    addressEl.classList.remove('visible');
+    notFoundEl.classList.remove('visible');
+    resultLabel.style.display = 'none';
+    postalEl.textContent = '';
+    addressEl.textContent = '';
+    notFoundEl.textContent = '';
+  }
+
+  searchBtn.addEventListener('click', async () => {
+    const block = blockInput.value.trim();
+    const street = streetInput.value.trim().replace(/\s+/g, '+');
+
+    if (!block || !street) return;
+
+    clearResult();
+    searchBtn.classList.add('is-loading');
+    searchBtn.disabled = true;
+
+    const searchVal = encodeURIComponent(`${block} ${streetInput.value.trim()}`);
+    const url = `https://www.onemap.gov.sg/api/common/elastic/search?searchVal=${searchVal}&returnGeom=Y&getAddrDetails=Y`;
+
+    try {
+      const res = await fetch(url);
+      const data = await res.json();
+
+      if (!data.found || data.found === 0 || !data.results || data.results.length === 0) {
+        notFoundEl.textContent = '— not found —';
+        requestAnimationFrame(() => notFoundEl.classList.add('visible'));
+      } else {
+        const result = data.results[0];
+        resultLabel.style.display = 'block';
+        postalEl.textContent = result.POSTAL;
+        addressEl.textContent = result.ADDRESS;
+        requestAnimationFrame(() => {
+          postalEl.classList.add('visible');
+          addressEl.classList.add('visible');
+        });
+      }
+    } catch (err) {
+      notFoundEl.textContent = '— error reaching API —';
+      requestAnimationFrame(() => notFoundEl.classList.add('visible'));
+    } finally {
+      searchBtn.classList.remove('is-loading');
+      searchBtn.disabled = false;
+    }
+  });
+
+  // Allow Enter key to trigger search
+  [blockInput, streetInput].forEach(el => {
+    el.addEventListener('keydown', e => {
+      if (e.key === 'Enter') searchBtn.click();
+    });
+  });
+</script>
+
+</body>
+</html>
